@@ -3,8 +3,6 @@ This acts as the view in a MVC pattern, and is responsible for all
 user interaction. For game logic, see the FBullCowGame class. 
 */
 
-//change
-
 #include <iostream>
 #include <string>
 #include <algorithm>
@@ -39,7 +37,7 @@ void PrintIntro() {
 	//introduce the game
 	constexpr int32 WORD_LENGTH = 5; //constexpr cannot change once program is running
 	std::cout << "Welcome to Bulls and Cows, a fun word game" << std::endl;
-	std::cout << "Can you guess the " << WORD_LENGTH << " letter isogram I'm thinking of?" << std::endl;
+	std::cout << "Can you guess the " << BCGame.GetHiddenWordLength() << " letter isogram I'm thinking of?" << std::endl;
 	return;
 }
 
@@ -54,21 +52,25 @@ FText GetGuess() {
 void PlayGame() {
 	BCGame.Reset();
 	int32 MaxTries = BCGame.GetMaxTries();
-	std::cout << MaxTries << std::endl;
-	std::cout << "Try " << BCGame.GetCurrentTry() << ". Enter your guess: " << std::endl;
+	std::cout << "You have " << MaxTries << " tries."<< std::endl;
+	std::cout << "Try #" << BCGame.GetCurrentTry() << ". Enter your guess: " << std::endl;
 	
 	//loop for number of turns askingfor guesses
-	constexpr int32 NUM_TURNS = 1;
-	int32 i = NUM_TURNS;
+	const int32 NUM_TURNS = BCGame.GetMaxTries();
+	int32 TurnNumber = NUM_TURNS;
 	do {
 		FText Guess = GetGuess(); //TODO make loop checking valid 
 		
-		//submit valid guess to game
+		EGuessStatus Status = BCGame.CheckGuessValidity(Guess);
+
+		//submit valid guess to game, and recieve counts
+		FBullCowCount BullCowCount = BCGame.SubmitGuess(Guess);
 		// print number of bulls and cows
 
-		std::cout << "Your guess was " << Guess << std::endl;
-		i--;
-	} while (i > 0);
+		std::cout << "Bulls = " << BullCowCount.Bulls << "\n";
+		std::cout << "Cows = " << BullCowCount.Cows << std::endl;
+		TurnNumber--;
+	} while (TurnNumber > 0);
 
 	//TODO add a game summary
 }
